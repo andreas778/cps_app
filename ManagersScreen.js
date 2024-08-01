@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, TextInput, Button, StyleSheet, Text } from 'react-native';
+import { View, TextInput, Button, StyleSheet, Text, ScrollView } from 'react-native';
 
 export default function ManagersScreen ({getUsers, fetchUserProject, reloadFlag}) {
     const [usersView, setUsersView] = useState(null);
@@ -42,8 +42,8 @@ export default function ManagersScreen ({getUsers, fetchUserProject, reloadFlag}
     }
     
     return (
-        <View>
+        <ScrollView>
             {usersView}
-        </View>
+        </ScrollView>
       );
 }

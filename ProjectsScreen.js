@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, TextInput, Button, StyleSheet, Text } from 'react-native';
+import { View, TextInput, Button, StyleSheet, Text, ScrollView } from 'react-native';
 
 export default function ProjectsScreen ({user, fetchUserProject}) {
     const [userProjects, setUserProjects] = useState(null);
@@ -11,8 +11,8 @@ export default function ProjectsScreen ({user, fetchUserProject}) {
 
 
     return (
-        <View>
+        <ScrollView>
             {userProjects}
-        </View>
+        </ScrollView>
       );
 }

@@ -7,6 +7,7 @@ import OrderForm from './OrderForm';
 export default function BasketScreen ({basketFill, setBasketFill, setBasketView, user}) {
     const [basketViews, setBasketViews] = useState(null);
     const [orderList, setOrderList] = useState(null);
+    const [totalSum, setTotalSum] = useState(0);
     //console.log('user in Basket =');
     //console.log(user);
 
@@ -22,19 +23,33 @@ export default function BasketScreen ({basketFill, setBasketFill, setBasketView,
                         <Text> Quantity: {basketFill[i][1]}</Text>
                         <Button title='+' onPress={() => changeQuantity(i, '+')}/> 
                         <Button title='-' onPress={() => changeQuantity(i, '-')}/>
+                        <Text> Price: {calculatePrice(basketFill[i])}</Text>
                         <Button title='Delete item' onPress={() => deleteItem(i)}/>
                         <Text> </Text>
                         <Text> </Text>
                     </>
                 );
-                order += `${i+1}. ${basketFill[i][0]}\nQuantity: ${basketFill[i][1]}\n\n`;
+                order += `${i+1}. ${basketFill[i][0]}\nQuantity: ${basketFill[i][1]}\nPrice: ${calculatePrice(basketFill[i])}\n\n`;
             }
             setBasketViews(basketList);
             setOrderList(order);
+            getTotalSum();
             //console.log(order);
         }
       getBasketList(basketFill);
     }, [basketFill]);
+
+    const calculatePrice = (item) => {
+      return item[1]*(+(item[2].slice(1).replace(",", "")))
+    }
+
+    const getTotalSum = () => {
+      let sum = 0;
+      for (let i = 0; i < basketFill.length; i++) {
+        sum += calculatePrice(basketFill[i]);
+      }
+      setTotalSum(sum);
+    }
 
   const changeQuantity = (i, sign) => {
     let basket = [...basketFill];
@@ -60,6 +75,7 @@ export default function BasketScreen ({basketFill, setBasketFill, setBasketView,
   return (
     <View >    
         {basketViews}
+        <Text>Total Price: {totalSum}</Text>
         {basketFill.length > 0 ? (<OrderForm  user={user} msg={orderList}/>) : (null)}
         <Button title='⬅' onPress={() => setBasketView(false)}/> 
         {basketFill.length > 0 ? (<Button title='Clear Basket' onPress={() => setBasketFill([])}/>) : (null)}

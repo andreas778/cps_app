@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import {NavigationContainer} from '@react-navigation/native';
-import { View, Text, StyleSheet, Button } from 'react-native';
+import { View, Text, StyleSheet, Button, SafeAreaView } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from './HomeScreen';
 import ProfileScreen from './ProfileScreen';
@@ -160,6 +160,8 @@ export default function App() {
             <>
                 <Text> Title: {user[id].title}</Text>
                 <Text> Description: {user[id].description}</Text>
+                <Text> </Text>
+                <Text> </Text>
             </>
         );
       });

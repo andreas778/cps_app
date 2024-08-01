@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, TextInput, Button, StyleSheet, Text } from 'react-native';
+import { View, TextInput, Button, StyleSheet, Text, ScrollView } from 'react-native';
 
-export default function ProjectsScreen ({user}) {
+export default function OrdersScreen ({user}) {
     const [ordersView, setOrdersView] = useState(null);
 
     useEffect(() => {
@@ -25,8 +25,8 @@ export default function ProjectsScreen ({user}) {
     }, [user.orders]);
 
     return (
-        <View>
+        <ScrollView>
             {ordersView}
-        </View>
+        </ScrollView>
       );
 }

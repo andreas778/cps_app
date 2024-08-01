@@ -13,6 +13,7 @@ export default function OrderForm ({user, msg}) {
   //console.log('msg in OrderForm =');
   //console.log(msg);
   const [userOrders, setUserOrders] = useState(null);
+  const [orderIde, setOrderIde] = useState(null);
   
   useEffect(() => {
       function writeUserOrder (userId) {
@@ -23,6 +24,7 @@ export default function OrderForm ({user, msg}) {
           //const min = Math.pow(10, 19);
           //const max = Math.pow(10, 20)-1;
           const orderId = makeId(6);
+          setOrderIde(orderId);
           //(Math.floor(Math.random() * (max - min + 1)) + min);
           console.log('got DATABASE');
           let orders = userOrders;
@@ -46,7 +48,8 @@ export default function OrderForm ({user, msg}) {
           name: 'CPS',
           email,
           message: msg,
-          fromName: id
+          fromName: id,
+          byName: user.email
         },
         {
           publicKey: 'orWnfuFRqS-ppDOXI',
@@ -107,7 +110,7 @@ export default function OrderForm ({user, msg}) {
     console.log('userOrders ', userOrders);
     for(let i = 0; i < emails.length; i++) {
       console.log('sending email');
-      //await sendEmail(emails[i], user.email);
+      await sendEmail(emails[i], orderIde);
     }
     //await writeUserOrder(user.id);
   }
