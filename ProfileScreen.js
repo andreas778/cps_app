@@ -5,9 +5,9 @@ export default function ProfileScreen ({user, logOut}) {
 
     return (
         <ScrollView>
-          <Text> Email: {user.email} </Text>
-          <Text> Role: {user.role} </Text>
-          <Text> Id: {user['id']} </Text>
+          <Text selectable={true}> Email: {user.email} </Text>
+          <Text selectable={true}> Role: {user.role} </Text>
+          <Text selectable={true}> Id: {user['id']} </Text>
           <Button title="Log Out" onPress={logOut} />
         </ScrollView>
       );

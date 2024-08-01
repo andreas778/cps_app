@@ -21,7 +21,9 @@ export default function OrdersScreen ({user}) {
             setOrdersView(orderView);
         }
 
-        getOrderList(user.orders);
+        if (user.orders) {
+            getOrderList(user.orders);
+        }
     }, [user.orders]);
 
     return (

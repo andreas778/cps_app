@@ -5,7 +5,9 @@ export default function ProjectsScreen ({user, fetchUserProject}) {
     const [userProjects, setUserProjects] = useState(null);
 
     useEffect(() => {
-        setUserProjects(fetchUserProject(user.projects));
+        if (user.projects) {
+            setUserProjects(fetchUserProject(user.projects));
+        }
     }, [user.projects]);
  
 

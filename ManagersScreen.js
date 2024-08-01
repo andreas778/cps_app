@@ -19,7 +19,7 @@ export default function ManagersScreen ({getUsers, fetchUserProject, reloadFlag}
                 });
             console.log(usersByRole);
             console.log('fetch mng finish');
-            return viewUsers(usersByRole);
+            viewUsers(usersByRole);
         }
         fetchManagers();
     }, [reloadFlag]);
@@ -32,8 +32,12 @@ export default function ManagersScreen ({getUsers, fetchUserProject, reloadFlag}
             userView.push(
                 <>
                     <Text> Manager {i+1}: {users[i].email} </Text>
-                    <Text> Projects: </Text>
-                    <>{fetchUserProject(users[i].projects)}</>
+                    {users[i].projects ? (
+                        <>
+                            <Text> Projects: </Text>
+                            <>{fetchUserProject(users[i].projects)}</>
+                        </>
+                    ) : (null)}
                 </>
             );
         } 
