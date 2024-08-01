@@ -75,7 +75,7 @@ export default function BasketScreen ({basketFill, setBasketFill, setBasketView,
   return (
     <View >    
         {basketViews}
-        <Text>Total Price: {totalSum}</Text>
+        {basketFill.length > 0 ? (<Text>Total Price: {totalSum}</Text>) : (null)}
         {basketFill.length > 0 ? (<OrderForm  user={user} msg={orderList}/>) : (null)}
         <Button title='⬅' onPress={() => setBasketView(false)}/> 
         {basketFill.length > 0 ? (<Button title='Clear Basket' onPress={() => setBasketFill([])}/>) : (null)}
