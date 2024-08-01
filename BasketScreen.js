@@ -40,7 +40,7 @@ export default function BasketScreen ({basketFill, setBasketFill, setBasketView,
     }, [basketFill]);
 
     const calculatePrice = (item) => {
-      return item[1]*(+(item[2].slice(1).replace(",", "")))
+      return Math.round(item[1]*(+(item[2].slice(1).replace(",", "")))* 100) / 100
     }
 
     const getTotalSum = () => {
@@ -48,7 +48,7 @@ export default function BasketScreen ({basketFill, setBasketFill, setBasketView,
       for (let i = 0; i < basketFill.length; i++) {
         sum += calculatePrice(basketFill[i]);
       }
-      setTotalSum(sum);
+      setTotalSum(Math.round(sum * 100) / 100);
     }
 
   const changeQuantity = (i, sign) => {
