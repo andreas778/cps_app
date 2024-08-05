@@ -937,12 +937,12 @@ export default function HomeScreen ({user}) {
 
   useEffect(() => {
     function handleSearch () {
-      console.log(search);
+      //console.log(search);
       let searches= [];
       for (let i = 0; i < products.length; i++) {
         //console.log(products[i][0]);
         if ((products[i][0].toLowerCase()).includes(search.toLowerCase()) ){// && search != '') {
-          console.log(products[i][0]);
+          //console.log(products[i][0]);
           searches.push(
             //<Text> {products[i][0]} </Text>
             //<Button title={products[i][0]} color="black" onPress={() => handleProduct(products[i])} />
@@ -954,7 +954,7 @@ export default function HomeScreen ({user}) {
           )
         }
       }
-      console.log(searchResults);
+      //console.log(searchResults);
       setSearchResults(searches);
     }
     handleSearch(searchResults);
