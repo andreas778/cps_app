@@ -999,7 +999,7 @@ export default function HomeScreen ({user}) {
       {!product && !basketView ? (
         <>
           <TextInput
-            placeholder="🔎 Type Search here"
+            placeholder="🔎 Search here"
             value={search}
             onChangeText={setSearch}
           />
