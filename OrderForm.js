@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { StyleSheet, Text, View, TextInput, Button } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Button, Alert } from 'react-native';
 import { send, EmailJSResponseStatus } from '@emailjs/react-native';
 import { app } from './firebaseConfig'; // Import auth and db from firebaseConfig
 import { getDatabase, ref, get, set } from 'firebase/database';
@@ -7,13 +7,9 @@ import { getDatabase, ref, get, set } from 'firebase/database';
 export default function OrderForm ({user, msg}) {
   //const [email, setEmail] = useState({email});
   const [name, setName] = useState({name});
-  //const [fromName, setFromName] = useState({fromName});
-  //console.log('user in OrderForm =');
-  //console.log(user);
-  //console.log('msg in OrderForm =');
-  //console.log(msg);
   const [userOrders, setUserOrders] = useState(null);
-  const [orderIde, setOrderIde] = useState(null);
+  const [orderId, setOrderId] = useState(null);
+  const [adminEmails, setAdminEmails] = useState(null);
   
   useEffect(() => {
       function writeUserOrder (userId) {
@@ -23,8 +19,6 @@ export default function OrderForm ({user, msg}) {
           console.log('got DATABASE');
           //const min = Math.pow(10, 19);
           //const max = Math.pow(10, 20)-1;
-          const orderId = makeId(6);
-          setOrderIde(orderId);
           //(Math.floor(Math.random() * (max - min + 1)) + min);
           console.log('got DATABASE');
           let orders = userOrders;
@@ -37,6 +31,24 @@ export default function OrderForm ({user, msg}) {
 
       writeUserOrder(user.id);
     }, [userOrders]);
+
+    useEffect(() => {
+      async function makingOrder () {
+        if (orderId && adminEmails) {
+          for(let i = 0; i < adminEmails.length; i++) {
+            console.log('sending email');
+            await sendEmail(adminEmails[i], orderId);
+          }
+        }
+        Alert.alert(`Order ${orderId} was made successfully`, msg, [
+          {text: 'OK', onPress: () => console.log('OK Pressed')},
+        ])
+    }
+
+      makingOrder();
+    }, [orderId]);
+
+
 
   const sendEmail = async (email, id) => {
     console.log(id);
@@ -106,12 +118,12 @@ export default function OrderForm ({user, msg}) {
   const sendEmails = async () => {
     console.log('sending mail start');
     const emails = await fetchEmails('admin', user.id);
+    setAdminEmails(emails);
     //console.log(emails);
-    console.log('userOrders ', userOrders);
-    for(let i = 0; i < emails.length; i++) {
-      console.log('sending email');
-      await sendEmail(emails[i], orderIde);
-    }
+    //console.log('userOrders ', userOrders);  
+    const order = makeId(6);
+    setOrderId(order);
+    
     //await writeUserOrder(user.id);
   }
 

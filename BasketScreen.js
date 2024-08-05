@@ -31,9 +31,11 @@ export default function BasketScreen ({basketFill, setBasketFill, setBasketView,
                 );
                 order += `${i+1}. ${basketFill[i][0]}\nQuantity: ${basketFill[i][1]}\nPrice: ${calculatePrice(basketFill[i])}\n\n`;
             }
-            setBasketViews(basketList);
+
+            setTotalSum(getTotalSum());
+            //order += `Total price: ${totalSum}`;
             setOrderList(order);
-            getTotalSum();
+            setBasketViews(basketList);
             //console.log(order);
         }
       getBasketList(basketFill);
@@ -43,12 +45,21 @@ export default function BasketScreen ({basketFill, setBasketFill, setBasketView,
       return Math.round(item[1]*(+(item[2].slice(1).replace(",", "")))* 100) / 100
     }
 
+    useEffect(() => {
+      const getBasketList = () => {
+          
+          setOrderList(orderList +`Total price: ${totalSum}`);
+      }
+    getBasketList();
+  }, [totalSum]);
+
     const getTotalSum = () => {
       let sum = 0;
       for (let i = 0; i < basketFill.length; i++) {
         sum += calculatePrice(basketFill[i]);
       }
-      setTotalSum(Math.round(sum * 100) / 100);
+      return Math.round(sum * 100) / 100;
+      //new Promise((resolve) => setTotalSum(Math.round(sum * 100) / 100, resolve)); 
     }
 
   const changeQuantity = (i, sign) => {
