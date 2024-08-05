@@ -47,8 +47,9 @@ export default function BasketScreen ({basketFill, setBasketFill, setBasketView,
 
     useEffect(() => {
       const getBasketList = () => {
-          
-          setOrderList(orderList +`Total price: ${totalSum}`);
+          if (totalSum) {
+            setOrderList(orderList +`Total price: ${totalSum}`);
+          }
       }
     getBasketList();
   }, [totalSum]);
@@ -87,7 +88,7 @@ export default function BasketScreen ({basketFill, setBasketFill, setBasketView,
     <View >    
         {basketViews}
         {basketFill.length > 0 ? (<Text>Total Price: {totalSum}</Text>) : (null)}
-        {basketFill.length > 0 ? (<OrderForm  user={user} msg={orderList} />) : (null)}
+        {basketFill.length > 0 ? (<OrderForm  user={user} msg={orderList} setBasketFill={setBasketFill}/>) : (null)}
         <Button title='⬅' onPress={() => setBasketView(false)}/> 
         {basketFill.length > 0 ? (<Button title='Clear Basket' onPress={() => setBasketFill([])}/>) : (null)}
     </View>

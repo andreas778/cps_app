@@ -43,7 +43,7 @@ export default function OrderForm ({user, msg, setBasketFill}) {
             {text: 'OK', onPress: () => console.log('OK Pressed')},
           ])
           setOrderId(null);
-          //setBasketFill([]);
+          setBasketFill([]);
           //
         }
     }
