@@ -4,7 +4,7 @@ import { send, EmailJSResponseStatus } from '@emailjs/react-native';
 import { app } from './firebaseConfig'; // Import auth and db from firebaseConfig
 import { getDatabase, ref, get, set } from 'firebase/database';
 
-export default function OrderForm ({user, msg}) {
+export default function OrderForm ({user, msg, setBasketFill}) {
   //const [email, setEmail] = useState({email});
   const [name, setName] = useState({name});
   const [userOrders, setUserOrders] = useState(null);
@@ -39,10 +39,13 @@ export default function OrderForm ({user, msg}) {
             console.log('sending email');
             await sendEmail(adminEmails[i], orderId);
           }
+          Alert.alert(`Order ${orderId} was made successfully`, msg, [
+            {text: 'OK', onPress: () => console.log('OK Pressed')},
+          ])
+          setOrderId(null);
+          //setBasketFill([]);
+          //
         }
-        Alert.alert(`Order ${orderId} was made successfully`, msg, [
-          {text: 'OK', onPress: () => console.log('OK Pressed')},
-        ])
     }
 
       makingOrder();
@@ -123,6 +126,7 @@ export default function OrderForm ({user, msg}) {
     //console.log('userOrders ', userOrders);  
     const order = makeId(6);
     setOrderId(order);
+    //
     
     //await writeUserOrder(user.id);
   }
