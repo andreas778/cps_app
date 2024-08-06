@@ -1,8 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, TextInput, Button, StyleSheet, Text, ScrollView } from 'react-native';
+import { View, TextInput, Button, StyleSheet, Text, ScrollView, TouchableHighlight } from 'react-native';
+import ProjectsScreen from './ProjectsScreen';
 
-export default function ManagersScreen ({getUsers, fetchUserProject, reloadFlag}) {
+export default function ManagersScreen ({getUsers, fetchUserProject, reloadFlag, viewProject, setViewProject}) {
     const [usersView, setUsersView] = useState(null);
+    const [user, setUser] = useState(null);
 
     useEffect(() => {
         async function fetchManagers () {
@@ -24,6 +26,10 @@ export default function ManagersScreen ({getUsers, fetchUserProject, reloadFlag}
         fetchManagers();
     }, [reloadFlag]);
  
+    const selectProject = (user) => {
+        setViewProject(user.project);
+        setUser(user);
+    }
 
     const viewUsers = (users) =>  {
         console.log(users);
@@ -31,13 +37,10 @@ export default function ManagersScreen ({getUsers, fetchUserProject, reloadFlag}
         for (let i = 0; i < users.length; i++) {
             userView.push(
                 <>
-                    <Text> Manager {i+1}: {users[i].email} </Text>
-                    {users[i].projects ? (
-                        <>
-                            <Text> Projects: </Text>
-                            <>{fetchUserProject(users[i].projects)}</>
-                        </>
-                    ) : (null)}
+                    <TouchableHighlight onPress={() => selectProject(users[i])}> 
+                    <Text> {users[i].email} </Text>
+                    </TouchableHighlight>
+                    <Text> </Text>
                 </>
             );
         } 
@@ -47,7 +50,16 @@ export default function ManagersScreen ({getUsers, fetchUserProject, reloadFlag}
     
     return (
         <ScrollView>
-            {usersView}
+            {user ? (
+                <ScrollView>
+            <ProjectsScreen user={user}  fetchUserProject={fetchUserProject}
+                  viewProject={viewProject} setViewProject={setViewProject}
+                  admin={true} setUser={setUser}/>
+                </ScrollView>
+                ) : (
+                    <ScrollView>
+                {usersView}
+                </ScrollView>)}
         </ScrollView>
       );
 }

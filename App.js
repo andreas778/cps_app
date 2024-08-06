@@ -216,7 +216,8 @@ const removeItem = async (key) => {
             {user.role == 'admin' ? (
               <Tab.Screen name="Managers List ">
                 {props => <ManagersScreen {...props}  getUsers={getUsers}
-                fetchUserProject={fetchUserProject} reloadFlag={reloadFlag}/>}
+                fetchUserProject={fetchUserProject} reloadFlag={reloadFlag}
+                viewProject={viewProject} setViewProject={setViewProject}/>}
               </Tab.Screen>
             ) : (
               <>
