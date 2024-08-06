@@ -8,7 +8,7 @@ export default function LoginForm({onLoginSuccess}) {
   const [error, setError] = useState('');
 
   const handleLogIn = async () => {
-    const error = await onLoginSuccess(email, password);
+    const error = await onLoginSuccess(email.toLowerCase(), password);
     setError(error);
   }
 

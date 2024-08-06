@@ -37,7 +37,7 @@ export default function OrderForm ({user, msg, setBasketFill}) {
         if (orderId && adminEmails) {
           for(let i = 0; i < adminEmails.length; i++) {
             console.log('sending email');
-            await sendEmail(adminEmails[i], orderId);
+            await sendEmail(adminEmails[i].toLowerCase(), orderId);
           }
           Alert.alert(`Order ${orderId} was made successfully`, msg, [
             {text: 'OK', onPress: () => console.log('OK Pressed')},
