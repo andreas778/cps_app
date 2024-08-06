@@ -107,6 +107,14 @@ export default function App() {
   };
 }
 
+const removeItem = async (key) => {
+  try {
+    await AsyncStorage.removeItem(key);
+  } catch (error) {
+    console.error('Error removing item:', error);
+  }
+};
+
   const getUserData = async (userInfo) => {
     // Fetch user role from Realtime Database
     console.log('reloading user');
@@ -122,6 +130,7 @@ export default function App() {
       userData['id'] = userInfo;
       console.log(userData);
       console.log(userInfo);
+      //await removeItem('user');
       //onLoginSuccess(userRole); // Pass the user role to the parent component
       await setItem('user', userData);
       console.log(typeof onLoginSuccess);
@@ -190,9 +199,6 @@ export default function App() {
               <>
                 <Tab.Screen name="My Projects ">
                   {props => <ProjectsScreen {...props}  user={user}  fetchUserProject={fetchUserProject}/>}
-                </Tab.Screen>
-                <Tab.Screen name="My Orders ">
-                  {props => <OrdersScreen {...props}  user={user}  />}
                 </Tab.Screen>
               </>
             )}

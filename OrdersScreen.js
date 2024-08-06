@@ -19,12 +19,16 @@ export default function OrdersScreen ({user}) {
                 );
               });
             setOrdersView(orderView);
+            console.log('user on order screen = ',user);
         }
 
         if (user.orders) {
             getOrderList(user.orders);
         }
-    }, [user.orders]);
+        else {
+            setOrdersView(null);
+        }
+    }, [user]);
 
     return (
         <ScrollView>
