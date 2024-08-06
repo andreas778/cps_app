@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import {NavigationContainer} from '@react-navigation/native';
-import { View, Text, StyleSheet, Button, SafeAreaView, RefreshControl, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Button, SafeAreaView, RefreshControl, ScrollView, TouchableHighlight } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from './HomeScreen';
 import ProfileScreen from './ProfileScreen';
@@ -28,6 +28,7 @@ export default function App() {
   const [refreshing, setRefreshing] = useState(false);
   const [scrollOffset, setScrollOffset] = useState(0);
   const [enableRefreshing, setEnableRefreshing] = useState(true);
+  const [viewProject, setViewProject] = useState(null);
 
 
 
@@ -37,11 +38,12 @@ export default function App() {
       reloadData();
     }
     catch {
-      console.log('Error reloading')
-    }
+      console.log('Error reloading');
+    }      
+    
     setTimeout(() => {
       setRefreshing(false);
-    }, 2000);
+    }, 5000);
   }, []);
   
 
@@ -183,13 +185,13 @@ const removeItem = async (key) => {
   const fetchUserProject = (user) =>  {
     let projects = [];
     console.log(user);
-    Object.keys(user).forEach(id => {
+    Object.keys(user).forEach(project => {
         //console.log(`Key: ${id}, Role: ${user[id].role}, Email: ${user[id].email}`);
         projects.push(
             <>
-                <Text> Title: {user[id].title}</Text>
-                <Text> Description: {user[id].description}</Text>
-                <Text> </Text>
+                <TouchableHighlight onPress={() => setViewProject(user[project])}> 
+                  <Text> {user[project].title} </Text>
+                </TouchableHighlight>
                 <Text> </Text>
             </>
         );
@@ -205,11 +207,8 @@ const removeItem = async (key) => {
   return (
       <NavigationContainer>
         {user ? (   
-          <ScrollView
-          contentContainerStyle={{flex: 1}} 
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} enabled={enableRefreshing}/>
-          }>
+          <>
+          <Button title='Reload' onPress={reloadData}/>  
           <Tab.Navigator>
             <Tab.Screen name="Search">
               {props => <HomeScreen {...props} user={user}/>}
@@ -222,7 +221,8 @@ const removeItem = async (key) => {
             ) : (
               <>
                 <Tab.Screen name="My Projects ">
-                  {props => <ProjectsScreen {...props}  user={user}  fetchUserProject={fetchUserProject}/>}
+                  {props => <ProjectsScreen {...props}  user={user}  fetchUserProject={fetchUserProject}
+                  viewProject={viewProject} setViewProject={setViewProject}/>}
                 </Tab.Screen>
               </>
             )}
@@ -231,7 +231,7 @@ const removeItem = async (key) => {
             </Tab.Screen>
           </Tab.Navigator>
           
-      </ScrollView> 
+      </> 
           
           ) : (
           <View  style={styles.container} onLayout={onLayoutRootView}>

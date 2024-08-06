@@ -1022,7 +1022,7 @@ export default function HomeScreen ({user}) {
 const styles = StyleSheet.create({
   button: {
     backgroundColor: 'white',
-    borderRadius: 5,
+    //borderRadius: 5,
     padding: 10,
   },
 });
