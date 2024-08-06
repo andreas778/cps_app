@@ -200,6 +200,9 @@ const removeItem = async (key) => {
                 <Tab.Screen name="My Projects ">
                   {props => <ProjectsScreen {...props}  user={user}  fetchUserProject={fetchUserProject}/>}
                 </Tab.Screen>
+                <Tab.Screen name="My Orders ">
+                  {props => <OrdersScreen {...props}  user={user}  />}
+                </Tab.Screen>
               </>
             )}
             <Tab.Screen name="Profile">
