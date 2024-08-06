@@ -1,13 +1,13 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import {NavigationContainer} from '@react-navigation/native';
-import { View, Text, StyleSheet, Button, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, Button, SafeAreaView, RefreshControl, ScrollView } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from './HomeScreen';
 import ProfileScreen from './ProfileScreen';
 import LoginForm from './LoginForm';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth, app } from './firebaseConfig'; // Import auth and db from firebaseConfig
-import { getDatabase, ref, get } from 'firebase/database';
+import { getDatabase, ref, get, set } from 'firebase/database';
 import * as SplashScreen from 'expo-splash-screen';
 import * as Font from 'expo-font';
 import Entypo from '@expo/vector-icons/Entypo';
@@ -25,7 +25,25 @@ export default function App() {
   const [user, setUser] = useState(null);
   const [userRole, setUserRole] = useState(null);
   const [reloadFlag, setReloadFlag] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [scrollOffset, setScrollOffset] = useState(0);
+  const [enableRefreshing, setEnableRefreshing] = useState(true);
 
+
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    try {
+      reloadData();
+    }
+    catch {
+      console.log('Error reloading')
+    }
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }, []);
+  
 
   useEffect(() => {
     async function prepare() {
@@ -61,14 +79,16 @@ export default function App() {
   }
 
 
+
+
   const getItem = async (key) => {
     try {
       const value = await AsyncStorage.getItem(key);
       value != null ? setUser(JSON.parse(value)) : setUser(null);
-      console.log('value is ');
-      console.log(value);
+      //console.log('value is ');
+      //console.log(value);
       console.log('user is');
-      console.log(typeof user);
+      //console.log(typeof user);
       console.log(user);
     } catch (error) {
       console.error('Error getting item:', error);
@@ -181,11 +201,15 @@ const removeItem = async (key) => {
     return projects;
 }
 
+
   return (
       <NavigationContainer>
-        {user ? (     
-          <> 
-          <Button title='Reload' onPress={reloadData}/>  
+        {user ? (   
+          <ScrollView
+          contentContainerStyle={{flex: 1}} 
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} enabled={enableRefreshing}/>
+          }>
           <Tab.Navigator>
             <Tab.Screen name="Search">
               {props => <HomeScreen {...props} user={user}/>}
@@ -200,16 +224,15 @@ const removeItem = async (key) => {
                 <Tab.Screen name="My Projects ">
                   {props => <ProjectsScreen {...props}  user={user}  fetchUserProject={fetchUserProject}/>}
                 </Tab.Screen>
-                <Tab.Screen name="My Orders ">
-                  {props => <OrdersScreen {...props}  user={user}  />}
-                </Tab.Screen>
               </>
             )}
             <Tab.Screen name="Profile">
               {props => <ProfileScreen {...props}  user={user} logOut={logOut} />}
             </Tab.Screen>
           </Tab.Navigator>
-          </>
+          
+      </ScrollView> 
+          
           ) : (
           <View  style={styles.container} onLayout={onLayoutRootView}>
             <LoginForm onLoginSuccess={handleLogIn}/>
@@ -225,5 +248,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 16,
+  },
+  scrollView: {
+    flex: 1, // This will make the ScrollView take up 20% of the screen height
+    // Or you can use a fixed height:
+    height: '10%', // This will make the ScrollView 100 pixels tall
   },
 });
