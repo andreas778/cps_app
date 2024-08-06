@@ -22,12 +22,12 @@ export default function ProjectsScreen ({user, fetchUserProject, viewProject, se
                     {userProjects}
                 </ScrollView>
             ) : (null)}
-            {viewProject ? (
+            {viewProject && !viewStage ? (
                 <ScrollView>
                     <Button title='⬅' onPress={() => setViewProject(null)}/>  
-                    <StagesScreen> 
+                    <StagesScreen 
                         viewProject={viewProject} setViewStage={setViewStage}
-                    </StagesScreen>
+                    />
                 </ScrollView>
             ) : (null)}
         </ScrollView>

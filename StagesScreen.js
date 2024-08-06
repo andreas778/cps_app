@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { View, TextInput, Button, StyleSheet, Text, ScrollView, TouchableHighlight } from 'react-native';
 
-export default function StagesScreen (viewProject, {setViewStage}) {
+export default function StagesScreen ({viewProject, setViewStage}) {
     const [viewStages, setViewStages] = useState([]);
  
     useEffect(() => {
@@ -22,13 +22,13 @@ export default function StagesScreen (viewProject, {setViewStage}) {
             console.log('vStages = ', vStages);
             setViewStages(vStages);
         }
-        getViewProject(viewProject.children[1].stages);
+        getViewProject(viewProject.stages);
     }, []);
 
 
     return (
         <ScrollView>
-           {console.log('viewProject = ', viewProject.children[1])}
+           {console.log('viewProject = ', viewProject)}
            {console.log('viewstage = ', viewProject)}
            {viewStages}
         </ScrollView>
