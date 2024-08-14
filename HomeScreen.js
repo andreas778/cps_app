@@ -1,13 +1,23 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Button, TextInput, ScrollView, TouchableHighlight } from 'react-native';
+import { View, Text, StyleSheet, Button, TextInput, ScrollView, TouchableHighlight, Modal } from 'react-native';
 import ProductScreen from './ProductScreen';
 import BasketScreen from './BasketScreen';
+import ProjectsScreen from './ProjectsScreen';
+import DateScreen from './DateScreen';
 
 
 
-export default function HomeScreen ({user}) {
+export default function HomeScreen ({user, fetchUserProject, viewProject, setViewProject}) {
   const [search, setSearch] = useState('');
   const [searchResults, setSearchResults] = useState('');
+  const [product, setProduct] = useState(null);
+  const [basketFill, setBasketFill] = useState([]);
+  const [basketView, setBasketView] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [chosenProject, setChosenProject] = useState(null);
+  const [modalDateView, setModalDateView] = useState(false);
+  const [deliveryDate, setDeliveryDate] = useState(null);
+  
   const products = [
     [
           "WD-40 Specialist Dry PTFE 400ml",
@@ -928,12 +938,6 @@ export default function HomeScreen ({user}) {
           "\u00a3136.37 "
     ]
 ]
-  const [product, setProduct] = useState(null);
-  const [basketFill, setBasketFill] = useState([]);
-  const [basketView, setBasketView] = useState(false);
-  //console.log('user in Home =');
-  //console.log(user);
-
 
   useEffect(() => {
     function handleSearch () {
@@ -979,20 +983,31 @@ export default function HomeScreen ({user}) {
     return false;
   }
 
-  const addToBasket = (product) => {
+  const addToBasket = (product, qty) => {
     let basket = basketFill;
     const index = inBasket(product);
     if (index) {
-      basket[index-1][1] += 1;
+      basket[index-1][1] += qty;
     }
     else {
-      basket.push([product[0], 1, product[3]]);
+      basket.push([product[0], qty, product[3]]);
     }
     setBasketFill(basket);
   }
 
+  const modalBack = () => {
+      setModalDateView(false);
+  }
+
+  const modalForward = () => {
+
+  }
+
   return (
     <ScrollView>  
+    {!basketView && user.role != 'admin' ? (
+      <Button title='Basket' onPress={() => setBasketView(true)}/>)
+      : (null)}
       {product && !basketView ? (
         <ProductScreen product={product} handleProduct={handleProduct} addToBasket={addToBasket} user={user}/>
       ) : (null)}
@@ -1002,17 +1017,49 @@ export default function HomeScreen ({user}) {
             placeholder="🔎 Search here"
             value={search}
             onChangeText={setSearch}
+            style={{padding: 10}}
           />
           {searchResults}
         </> 
       ) : (null)}   
       {basketView ? (
-        <BasketScreen basketFill={basketFill} setBasketFill={setBasketFill}
-        setBasketView={setBasketView} user={user}/>
+            <>
+            <Button title='⬅' onPress={() => setBasketView(false)}/> 
+            <BasketScreen basketFill={basketFill} setBasketFill={setBasketFill}
+                        user={user} chosenProject={chosenProject} setModalVisible={setModalVisible}
+                        deliveryDate={deliveryDate} modalVisible={modalVisible}
+                        setDeliveryDate={setDeliveryDate} />
+            <Modal
+                  animationType="slide"
+                  transparent={false}
+                  visible={modalVisible}
+                  onRequestClose={() => {
+                        setModalVisible(false);
+                  }}>
+                  <ScrollView>
+                        <Button title='❌' onPress={() => setModalVisible(false)}/> 
+                        {modalDateView ? (
+                              <Button title='⬅' onPress={() => setModalDateView(false)}/>
+                              ) : (null)}
+                        {!modalDateView && chosenProject ? (
+                              <Button title='➡' onPress={() => setModalDateView(true)}/>
+                              ) : (null)}
+                        {!modalDateView ? (
+                              <ProjectsScreen user={user} fetchUserProject={fetchUserProject}
+                                    viewProject={viewProject} setViewProject={setViewProject}
+                                    modal={true} chosenProject={chosenProject}
+                                    setChosenProject={setChosenProject} setModalVisible={setModalVisible}
+                                    setModalDateView={setModalDateView}/>
+                        ) : (null)}
+                        {modalDateView ? (
+                              <DateScreen deliveryDate={deliveryDate} setDeliveryDate={setDeliveryDate} 
+                                          setModalDateView={setModalDateView}
+                                          setModalVisible={setModalVisible} chosenProject={chosenProject}/>
+                        ) : (null)}
+                  </ScrollView>
+            </Modal>
+        </>
       ) : (null)}
-      {!basketView && user.role != 'admin' ? (
-        <Button title='Basket' onPress={() => setBasketView(true)}/>)
-        : (null)}
       
         
     </ScrollView>

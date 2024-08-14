@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, StyleSheet, Text } from 'react-native';
+import { View, TextInput, Button, StyleSheet, Text, TouchableHighlight } from 'react-native';
 
 
 export default function LoginForm({onLoginSuccess}) {
@@ -14,7 +14,7 @@ export default function LoginForm({onLoginSuccess}) {
 
   return (
     <View style={styles.container}>
-      <Text>Log In</Text>
+      {/*<Text>Log In</Text>*/}
       <TextInput
         style={styles.input}
         placeholder="Email"
@@ -29,7 +29,12 @@ export default function LoginForm({onLoginSuccess}) {
         secureTextEntry
       />
       {error ? <Text style={styles.error}>{error}</Text> : null}
-      <Button title="Log In" onPress={handleLogIn} />
+      <View style={styles.login}>
+      <Button title="Log In" color='black'  onPress={handleLogIn}/>
+      {/*<TouchableHighlight  onPress={handleLogIn}>
+        <Text>Log In</Text>
+      </TouchableHighlight>*/}
+      </View>
     </View>
   );
 }
@@ -40,14 +45,21 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginBottom: 12,
-    paddingHorizontal: 8,
-    width: '100%',
+    borderColor: 'black',
+    borderWidth: 2,
+    marginBottom: '10%',
+    paddingRight: '20%',
+    width: '50%',
+    text: 'bold',
+  },
+  login: {
+    marginVertical: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'white',
   },
   error: {
     color: 'red',
-    marginBottom: 12,
+    marginBottom: '10%',
   },
 });

@@ -1,36 +1,107 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { StyleSheet, Text, View, TextInput, Button, Alert } from 'react-native';
+
+import { StyleSheet, Text, View, TextInput, Button, Alert, Modal, ScrollView, ActivityIndicator } from 'react-native';
+
+
 import { send, EmailJSResponseStatus } from '@emailjs/react-native';
 import { app } from './firebaseConfig'; // Import auth and db from firebaseConfig
 import { getDatabase, ref, get, set } from 'firebase/database';
+//import DateScreen from './DateScreen'
 
-export default function OrderForm ({user, msg, setBasketFill}) {
+
+export default function OrderForm ({user, msg, setBasketFill, chosenProject, setModalVisible, deliveryDate,
+                                    modalVisible, setDeliveryDate}) {
   //const [email, setEmail] = useState({email});
   const [name, setName] = useState({name});
-  const [userOrders, setUserOrders] = useState(null);
+  const [userOrders, setUserOrders] = useState({});
   const [orderId, setOrderId] = useState(null);
   const [adminEmails, setAdminEmails] = useState(null);
+  const [startSending, setStartSending] = useState(false);
+  const [message, setMessage] = useState(null);
+
   
   useEffect(() => {
       function writeUserOrder (userId) {
-        if (userOrders) {
+        //console.log('userOrders && orderId = ', userOrders, orderId);
+        if (orderId) {
           console.log('writeUserOrder start');
           const db = getDatabase(app);
           console.log('got DATABASE');
           //const min = Math.pow(10, 19);
           //const max = Math.pow(10, 20)-1;
           //(Math.floor(Math.random() * (max - min + 1)) + min);
+          console.log('userOrders = ', userOrders);
           console.log('got DATABASE');
           let orders = userOrders;
           orders[orderId] = msg;
           console.log('orders', orders);
-          set(ref(db, 'users/' + userId + '/orders'), orders);
-          //setUserOrders(null);
+          set(ref(db, 'users/' + userId + '/projects/' + chosenProject[2] + '/stages/' + chosenProject[3] + '/orders'), orders);
       }
     }
 
       writeUserOrder(user.id);
-    }, [userOrders]);
+    }, [orderId]);
+
+  async function sendEmailWithTimeout(email, orderId) {
+      const timeout = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('sendEmail took longer than 10 seconds')), 10000)
+      );
+  
+      return Promise.race([sendEmail(email, orderId), timeout]);
+  }
+
+  useEffect(() => {
+    async function makingOrder () {
+      if (orderId && adminEmails) {
+        for(let i = 0; i < adminEmails.length; i++) {
+          console.log('sending email');
+          try {
+            await sendEmailWithTimeout(adminEmails[i].toLowerCase(), orderId); //! add promise timeout
+          }
+          catch {
+            //console.error(`Failed to send email to ${adminEmails[i]}:`, error);
+            setStartSending(false);
+            Alert.alert(`Error making order, please try again!`, [
+              {text: 'OK', onPress: () => console.log('OK Pressed')},
+            ])
+          }
+        }
+        setStartSending(false);
+      }
+  }
+
+    makingOrder();
+  }, [orderId]);
+
+  
+
+useEffect(() => {
+  async function sendingEmails () {
+    if (deliveryDate && !modalVisible) {
+      console.log('\n\n\nSTART SENDING MAILS 22222\n\n\n');
+      setMessage('Project: ' + chosenProject[0].title + '\nStage: ' + chosenProject[1].title + '\n' + msg + '\n\nDelivery date: ' + deliveryDate);
+      setStartSending(true);
+      await sendEmails();
+    }
+  }
+    sendingEmails();
+  }, [deliveryDate, modalVisible]);
+
+
+  useEffect(() => {
+    async function finishSending () {
+      if (!startSending && orderId) {
+        Alert.alert(`Order ${orderId} was made successfully`, message, [
+          {text: 'OK', onPress: () => console.log('OK Pressed')},
+        ])
+        setOrderId(null);
+        setBasketFill([]);
+        setDeliveryDate(null);
+      }
+    }
+    finishSending();
+    }, [startSending]);
+
 
     useEffect(() => {
       async function makingOrder () {
@@ -55,6 +126,8 @@ export default function OrderForm ({user, msg, setBasketFill}) {
 
   const sendEmail = async (email, id) => {
     console.log(id);
+    console.log('Im sending mail...');
+    //return;
     try {
       await send(
         'service_md391k9',
@@ -62,7 +135,7 @@ export default function OrderForm ({user, msg, setBasketFill}) {
         {
           name: 'CPS',
           email,
-          message: msg,
+          message: message,
           fromName: id,
           byName: user.email
         },
@@ -94,10 +167,7 @@ export default function OrderForm ({user, msg, setBasketFill}) {
 
   const fetchEmails = async (role, userId) =>  {
     const users = await getUsers();
-    console.log('users');
-    console.log(users);
-    console.log('userId');
-    console.log(userId);
+    console.log('fetchEmails start');
     let emails = [];
     let orders = null;
     Object.keys(users).forEach(id => {
@@ -105,12 +175,20 @@ export default function OrderForm ({user, msg, setBasketFill}) {
       if (users[id].role == role) {
         emails.push(users[id].email);
       }
-      console.log('orders' in users[id]);
-      console.log(id == userId);
-      if ('orders' in users[id] && id == userId) {
-        console.log('users[id].orders');
-        console.log(users[id].orders);
-        setUserOrders(users[id].orders);
+      console.log('orders in users[id] ', 'orders' in users[id]);
+      console.log('id == userId ', id == userId);
+      let userStageOrders = null;
+      try {
+        userStageOrders = users[id].projects[chosenProject[2]].stages[chosenProject[3]].orders;
+        console.log('users[id].orders  ', userStageOrders);
+        if (id == userId) {
+          if (userStageOrders) {
+            setUserOrders(userStageOrders);
+          }
+        }
+      }
+      catch {
+        
       }
     });
     console.log('emails ', emails);
@@ -119,6 +197,7 @@ export default function OrderForm ({user, msg, setBasketFill}) {
   }
 
   const sendEmails = async () => {
+    console.log('chosenProject = ', chosenProject);
     console.log('sending mail start');
     const emails = await fetchEmails('admin', user.id);
     setAdminEmails(emails);
@@ -132,6 +211,8 @@ export default function OrderForm ({user, msg, setBasketFill}) {
   }
 
   const makeId = (length) => {
+    return Date.now();
+    /*
     let result = '';
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     const charactersLength = characters.length;
@@ -141,14 +222,27 @@ export default function OrderForm ({user, msg, setBasketFill}) {
       counter += 1;
     }
     console.log('result = ', result);
-    return result;
+    return result;*/
 }
 
 
-
   return (
-    <View>
-      <Button title="Make an order" onPress={sendEmails} />
-    </View>
+    <ScrollView>
+      <Button title="Make an order"  onPress={() => setModalVisible(true)}/>
+      {startSending ? (
+        <>
+        <Modal
+            animationType="slide"
+            transparent={false}
+            visible={startSending}
+            onRequestClose={() => {
+                  setStartSending(false);
+            }}>
+            <ActivityIndicator size="large"/>
+            <Text>Creating order ... Do Not Close the App!</Text>
+          </Modal>
+        </>
+      ) : (null)}
+    </ScrollView>
   );
 };

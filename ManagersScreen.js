@@ -52,9 +52,9 @@ export default function ManagersScreen ({getUsers, fetchUserProject, reloadFlag,
         <ScrollView>
             {user ? (
                 <ScrollView>
-            <ProjectsScreen user={user}  fetchUserProject={fetchUserProject}
-                  viewProject={viewProject} setViewProject={setViewProject}
-                  admin={true} setUser={setUser}/>
+                    <ProjectsScreen user={user}  fetchUserProject={fetchUserProject}
+                        viewProject={viewProject} setViewProject={setViewProject}
+                        admin={true} setUser={setUser}/>
                 </ScrollView>
                 ) : (
                     <ScrollView>

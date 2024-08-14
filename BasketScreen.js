@@ -1,15 +1,14 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Button, TextInput } from 'react-native';
+import { View, Text, StyleSheet, Button, TextInput, ScrollView, Modal } from 'react-native';
 import OrderForm from './OrderForm';
 
 
 
-export default function BasketScreen ({basketFill, setBasketFill, setBasketView, user}) {
+export default function BasketScreen ({basketFill, setBasketFill, setBasketView, user, setModalVisible,
+                                      chosenProject, deliveryDate, modalVisible, setDeliveryDate}) {
     const [basketViews, setBasketViews] = useState(null);
     const [orderList, setOrderList] = useState(null);
     const [totalSum, setTotalSum] = useState(0);
-    //console.log('user in Basket =');
-    //console.log(user);
 
     useEffect(() => {
         const getBasketList = (basketFill) => {
@@ -85,13 +84,17 @@ export default function BasketScreen ({basketFill, setBasketFill, setBasketView,
   }
 
   return (
-    <View >    
+    <ScrollView>    
         {basketViews}
         {basketFill.length > 0 ? (<Text>Total Price: {totalSum}</Text>) : (null)}
-        {basketFill.length > 0 ? (<OrderForm  user={user} msg={orderList} setBasketFill={setBasketFill}/>) : (null)}
-        <Button title='⬅' onPress={() => setBasketView(false)}/> 
+        {basketFill.length > 0 ? (
+            <OrderForm  user={user} msg={orderList} setBasketFill={setBasketFill}
+                        chosenProject={chosenProject} setModalVisible={setModalVisible}
+                        deliveryDate={deliveryDate} modalVisible={modalVisible}
+                        setDeliveryDate={setDeliveryDate} />        
+        ) : (null)}
         {basketFill.length > 0 ? (<Button title='Clear Basket' onPress={() => setBasketFill([])}/>) : (null)}
-    </View>
+    </ScrollView>
   );
 }
 

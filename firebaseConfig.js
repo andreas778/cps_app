@@ -1,7 +1,8 @@
 // firebaseConfig.js
 import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import {  initializeAuth, getAuth, getReactNativePersistence } from 'firebase/auth';
 import { getDatabase, ref, get } from 'firebase/database';
+import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 //import {  } from 'firebase/database';
 //import { db } from './firebaseConfig';
 
@@ -21,8 +22,10 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 // Initialize Firebase Auth
-const auth = getAuth(app);
-
+//const auth = getAuth(app);
+const auth = initializeAuth(app, {
+  persistence: getReactNativePersistence(ReactNativeAsyncStorage)
+});
 // Initialize Realtime Database
 //const db = getDatabase(app);
 //console.log(db);
@@ -43,4 +46,4 @@ async function testDatabaseConnection() {
 
 testDatabaseConnection();
 */
-export { auth};
+export { auth };

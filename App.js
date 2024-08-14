@@ -15,8 +15,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import ProjectsScreen from './ProjectsScreen';
 import ManagersScreen from './ManagersScreen';
-import ProductScreen from './ProductScreen';
-import OrdersScreen from './OrdersScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -29,7 +27,9 @@ export default function App() {
   const [scrollOffset, setScrollOffset] = useState(0);
   const [enableRefreshing, setEnableRefreshing] = useState(true);
   const [viewProject, setViewProject] = useState(null);
+  const [chosenStage, setChosenStage] = useState(null);
 
+  
 
 
   const onRefresh = useCallback(() => {
@@ -96,7 +96,7 @@ export default function App() {
       console.error('Error getting item:', error);
       setUser(null);
     }
-  };
+  }
 
   const logOut = async () => {
     setUser(null);
@@ -182,26 +182,6 @@ const removeItem = async (key) => {
     //}
   }
 
-  const fetchUserProject = (user) =>  {
-    let projects = [];
-    console.log(user);
-    Object.keys(user).forEach(project => {
-        //console.log(`Key: ${id}, Role: ${user[id].role}, Email: ${user[id].email}`);
-        projects.push(
-            <>
-                <TouchableHighlight onPress={() => setViewProject(user[project])}> 
-                  <Text> {user[project].title} </Text>
-                </TouchableHighlight>
-                <Text> </Text>
-            </>
-        );
-      });
-        
-        
-    console.log('projects');
-    console.log(projects);
-    return projects;
-}
 
 
   return (
@@ -211,7 +191,8 @@ const removeItem = async (key) => {
           <Button title='Reload' onPress={reloadData}/>  
           <Tab.Navigator>
             <Tab.Screen name="Search">
-              {props => <HomeScreen {...props} user={user}/>}
+              {props => <HomeScreen {...props} user={user}
+                          viewProject={viewProject} setViewProject={setViewProject}/>}
             </Tab.Screen>          
             {user.role == 'admin' ? (
               <Tab.Screen name="Managers List ">
@@ -222,7 +203,7 @@ const removeItem = async (key) => {
             ) : (
               <>
                 <Tab.Screen name="My Projects ">
-                  {props => <ProjectsScreen {...props}  user={user}  fetchUserProject={fetchUserProject}
+                  {props => <ProjectsScreen {...props}  user={user}
                   viewProject={viewProject} setViewProject={setViewProject}/>}
                 </Tab.Screen>
               </>
